@@ -3,7 +3,7 @@ from random import randrange
 import datetime
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
-from database import create_db, create_tables, insert_users
+from database import create_db, create_tables, insert_users, check_users
 
 
 with open('bot_token.txt', 'r') as file:
@@ -120,7 +120,7 @@ def random_users(users):
     random_choice = {}
     while not filter_success:
         random_choice = random.choice(users)
-        if get_photos(random_choice['id']) and not random_choice['is_closed']:
+        if get_photos(random_choice['id']) and not random_choice['is_closed'] and check_users(random_choice):
             filter_success = True
     return random_choice
 
@@ -170,7 +170,7 @@ def main():
                     write_msg(event.user_id, 'Пара не найдена')
                     continue
                 command = 'да'
-                while command.lower() in ['да']:
+                while command.lower() == 'да':
                     random_user = random_users(users_found)
                     photo_data = get_photos(random_user['id'])
                     insert_users(random_user, photo_data)
